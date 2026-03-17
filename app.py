@@ -7,15 +7,21 @@ from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
 
 
-def conectar_mysql(host: str, user: str, password: str, database: str) -> MySQLConnection:
+def conectar_mysql(
+    host: str,
+    user: str,
+    password: str,
+    database: str,
+    autocommit: bool = False,
+) -> MySQLConnection:
     # Cria e retorna uma conexão com o banco MySQL.
-    # Conecta ao banco com autocommit desabilitado para controlar transações manualmente
+    # Conecta ao banco com autocommit configurável para controlar transações manualmente.
     return mysql.connector.connect(
         host=host,
         user=user,
         password=password,
         database=database,
-        autocommit=False,
+        autocommit=autocommit,
     )
 
 
@@ -109,14 +115,21 @@ def listar_produtos(conn: MySQLConnection) -> list[tuple]:
 
 if __name__ == "__main__":
     # Exemplo de uso rápido (ajuste as credenciais conforme necessário)
-    import os
+    from config import (
+        MYSQL_AUTOCOMMIT,
+        MYSQL_DATABASE,
+        MYSQL_HOST,
+        MYSQL_PASSWORD,
+        MYSQL_USER,
+    )
 
-    host = os.environ.get("MYSQL_HOST", "localhost")
-    user = os.environ.get("MYSQL_USER", "root")
-    password = os.environ.get("MYSQL_PASSWORD", "")
-    database = os.environ.get("MYSQL_DATABASE", "db_produtos")
-
-    conn = conectar_mysql(host, user, password, database)
+    conn = conectar_mysql(
+        host=MYSQL_HOST,
+        user=MYSQL_USER,
+        password=MYSQL_PASSWORD,
+        database=MYSQL_DATABASE,
+        autocommit=MYSQL_AUTOCOMMIT,
+    )
     try:
         inserted_id, codigo = inserir_produto(conn, grupo="C", tipo_alimento="A", pais="BR")
         print(f"Inserido id={inserted_id} com código {codigo}")

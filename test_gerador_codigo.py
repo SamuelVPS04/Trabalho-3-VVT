@@ -1,8 +1,3 @@
-# Testes unitários para a função de geração de códigos.
-#
-# Os testes aqui não dependem de um banco MySQL real. A lógica de acesso é "mockada"
-# através de um cursor fake que responde aos comandos SQL esperados.
-
 from __future__ import annotations
 
 import pytest
