@@ -3,9 +3,12 @@ from __future__ import annotations
 import os
 from typing import Optional
 
+from dotenv import load_dotenv
 import mysql.connector
 from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
+
+load_dotenv()
 
 
 def conectar_mysql(

@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import pytest
 
-from app import gerar_codigo
+from app import gerar_codigo, validar_parametros
 
 
 class FakeCursor:
     def __init__(self, fetchone_results: list[tuple]):
-        # Lista de tuplas que serão retornadas em chamadas sucessivas a fetchone()
         self._fetchone_results = fetchone_results
         self.executed: list[tuple[str, tuple]] = []
 
@@ -21,7 +20,6 @@ class FakeCursor:
 
 
 def test_gera_codigo_para_grupo_existente_incrementa_sec():
-    # Quando já existe sec=3 para o grupo, o próximo deve ser 4.
     cursor = FakeCursor(fetchone_results=[(3,), (0,)])
     codigo, sec = gerar_codigo(cursor, grupo="C", tipo_alimento="A", pais="BR")
 
@@ -30,8 +28,7 @@ def test_gera_codigo_para_grupo_existente_incrementa_sec():
 
 
 def test_gera_codigo_para_grupo_novo_comeca_em_1():
-    # Quando não há registros para o grupo, MAX(sec) retorna NULL.
-    cursor = FakeCursor(fetchone_results=[(None,), (0,)])
+    cursor = FakeCursor(fetchone_results=[(0,), (0,)])
     codigo, sec = gerar_codigo(cursor, grupo="X", tipo_alimento="Z", pais="BR")
 
     assert sec == 1
@@ -39,40 +36,44 @@ def test_gera_codigo_para_grupo_novo_comeca_em_1():
 
 
 @pytest.mark.parametrize(
-    "sec, expected",
+    "sec_atual, esperado",
     [
-        (1, "0001"),
-        (15, "0015"),
-        (100, "0100"),
-        (9999, "9999"),
+        (0, "0001"),
+        (14, "0015"),
+        (99, "0100"),
+        (9998, "9999"),
     ],
 )
-def test_zerofill_quatro_digitos(sec: int, expected: str):
-    cursor = FakeCursor(fetchone_results=[(sec - 1,), (0,)])
+def test_zerofill_quatro_digitos(sec_atual: int, esperado: str):
+    cursor = FakeCursor(fetchone_results=[(sec_atual,), (0,)])
     codigo, _ = gerar_codigo(cursor, grupo="A", tipo_alimento="B", pais="BR")
 
-    assert codigo[3:7] == expected
+    assert codigo[3:7] == esperado
 
 
-def test_entrada_invalida_gera_value_error():
-    cursor = FakeCursor(fetchone_results=[(None,), (0,)])
+def test_parametros_invalidos_disparam_value_error():
+    with pytest.raises(ValueError):
+        validar_parametros("", "A", "BR")
 
     with pytest.raises(ValueError):
-        gerar_codigo(cursor, grupo="", tipo_alimento="A", pais="BR")
+        validar_parametros("C", "", "BR")
 
     with pytest.raises(ValueError):
-        gerar_codigo(cursor, grupo="C", tipo_alimento="", pais="BR")
+        validar_parametros("C", "A", "B")
 
     with pytest.raises(ValueError):
-        gerar_codigo(cursor, grupo="C", tipo_alimento="A", pais="B")
-
-    with pytest.raises(ValueError):
-        gerar_codigo(cursor, grupo="C", tipo_alimento="A", pais="BRA")
+        validar_parametros("C", "A", "BRA")
 
 
-def test_gera_codigo_duplicado_gera_value_error():
-    # Simula que o SELECT COUNT retorna 1 para o código gerado.
-    cursor = FakeCursor(fetchone_results=[(1,), (1,)])
+def test_parametros_sao_normalizados():
+    grupo, tipo, pais = validar_parametros(" c ", " a ", " br ")
+    assert grupo == "C"
+    assert tipo == "A"
+    assert pais == "BR"
+
+
+def test_gera_codigo_duplicado_dispara_value_error():
+    cursor = FakeCursor(fetchone_results=[(3,), (1,)])
 
     with pytest.raises(ValueError):
         gerar_codigo(cursor, grupo="C", tipo_alimento="A", pais="BR")

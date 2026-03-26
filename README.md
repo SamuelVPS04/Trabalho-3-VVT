@@ -1,21 +1,30 @@
-# Trabalho 2 - VV&T: Geração de Códigos e Testes Automatizados
+# Trabalho 3 - VV&T: Pipeline CI/CD com MySQL, Python e Pytest
 
-Este projeto implementa um sistema de geração automática de códigos identificadores únicos para produtos, utilizando Python, MySQL e testes automatizados com Pytest.
+Este projeto implementa uma solução completa para o trabalho de VV&T com foco em:
+
+- provisionamento automatizado do ambiente Linux via pipeline
+- inicialização de um servidor MySQL
+- criação automática do banco de dados e da tabela `codigos_sequenciais`
+- geração de códigos sequenciais no formato `PAIS + GRUPO + SEQUENCIA_4_DIGITOS + TIPO_ALIMENTO`
+- execução de testes automatizados com `pytest`
+- validação por query após inserção real no banco
 
 ## Estrutura do Projeto
 
-- `schema.sql`: Script SQL para criação do banco de dados `db_produtos` e tabela `produtos`, incluindo dados de exemplo.
-- `app.py`: Código Python principal contendo funções para conexão com MySQL, geração de códigos e inserção de produtos.
-- `test_gerador_codigo.py`: Suíte de testes unitários para validar a lógica de geração de códigos.
-- `pytest_output.txt`: Resultado da execução dos testes (8 passed).
-- `ENTREGA_FINAL.docx`: Documento de entrega contendo códigos, testes e resultados.
-- `gerar_entrega_docx_final.py`: Script para gerar o documento DOCX de entrega.
+- `.github/workflows/main.yml`: pipeline CI/CD
+- `schema.sql`: criação do banco e da tabela
+- `app.py`: conexão com MySQL, geração de código, inserção e consulta
+- `test_gerador_codigo.py`: testes unitários
+- `test_integracao_mysql.py`: testes de integração com MySQL real
+- `RELATORIO_TECNICO.md`: relatório técnico breve
 
 ## Requisitos
 
-- Python 3.8+
-- MySQL Server (versão 8.0+ recomendada)
-- Dependências Python listadas em `requirements.txt`
+- Python 3.10+
+- MySQL 8.0+
+- Dependências em `requirements.txt`
+
+## Execução local
 
 ## Instalação e Configuração
 
