@@ -1,11 +1,9 @@
 -- Schema de criação do banco de dados e tabela para o Trabalho 2
 -- Banco: db_produtos
 
-DROP DATABASE IF EXISTS db_vvt;
 CREATE DATABASE db_vvt CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE db_vvt;
 
-DROP TABLE IF EXISTS codigos_sequenciais;
 CREATE TABLE codigos_sequenciais (
     id INT AUTO_INCREMENT PRIMARY KEY,
     codigo VARCHAR(8) NOT NULL UNIQUE,
